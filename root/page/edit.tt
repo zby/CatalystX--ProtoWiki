@@ -1,0 +1,4 @@
+<a href="[% c.uri_for( '/pagelist' ) %]">List</a>
+<hr>
+<h2>[% title %]</h2>
+[% page_form.render %]

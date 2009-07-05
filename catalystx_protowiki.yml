@@ -1,0 +1,24 @@
+---
+name: CatalystX::ProtoWiki
+
+View::TT:
+    WRAPPER: 'wrapper.tt'
+
+InstantCRUD:
+    model_name: DBICSchemamodel
+    schema_name: DBSchema
+    maxrows: 10
+
+authentication:
+    realms:
+        default:
+            credential:
+                class: Password
+                password_field: password
+                password_type: clear
+            store:
+                class: DBIx::Class
+                user_model: DBICSchemamodel::User
+                role_relation: roles
+                role_field: role
+

@@ -1,0 +1,58 @@
+
+<table>
+<tr>
+
+
+<th> [% order_by_column_link('username', 'Username') %] </th>
+
+
+<th> [% order_by_column_link('email', 'Email') %] </th>
+
+
+<th> [% order_by_column_link('t_created', 'Created') %] </th>
+
+
+<th> [% order_by_column_link('t_updated', 'Updated') %] </th>
+
+ 
+</tr>
+[% WHILE (row = result.next) %]
+    <tr>
+   
+    <td>
+    
+    [%  row.username %]
+    
+    </td>
+    
+    <td>
+    
+    [%  row.email %]
+    
+    </td>
+    
+    <td>
+    
+    [%  row.t_created %]
+    
+    </td>
+    
+    <td>
+    
+    [%  row.t_updated %]
+    
+    </td>
+     
+    [% SET id = row.$pri %]
+    <td><a href="[% c.uri_for( 'view', row.username,  ) %]">View</a></td>
+    [% IF c.check_user_roles('admin') %]
+    <td><a href="[% c.uri_for( 'edit', row.user_id,  ) %]">Edit</a></td>
+    <td><a href="[% c.uri_for( 'destroy', row.user_id,  ) %]">Destroy</a></td>
+    [% END %]
+    </tr>
+[% END %]
+</table>
+[% PROCESS pager.tt %]
+<br/>
+<a href="[% c.uri_for( 'edit' ) %]">Add</a>
+

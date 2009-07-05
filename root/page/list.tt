@@ -1,0 +1,63 @@
+
+<table>
+<tr>
+
+<th> [% order_by_column_link('creator', 'Creator') %] </th>
+
+
+<th> [% order_by_column_link('title', 'Title') %] </th>
+
+
+<th> [% order_by_column_link('t_created', 'T Created') %] </th>
+
+
+<th> [% order_by_column_link('t_updated', 'T Updated') %] </th>
+
+
+<th> Actions </th>
+
+ 
+</tr>
+[% WHILE (row = result.next) %]
+    <tr>
+    
+    <td>
+    
+    [%  row.creator.username %]
+    
+    </td>
+    
+   
+    <td>
+    
+    [%  row.title %]
+    
+    </td>
+    
+    
+    <td>
+    
+    [%  row.t_created %]
+    
+    </td>
+    
+    <td>
+    
+    [%  row.t_updated %]
+    
+    </td>
+     
+    [% SET id = row.$pri %]
+    <td><a href="[% c.uri_for( '/page', row.title,  ) %]">View</a> 
+    [% IF c.user %]
+    <a href="[% c.uri_for( '/page', row.title, 'edit' ) %]">Edit</a>
+    <a href="[% c.uri_for( '/page', row.title, 'delete' ) %]">Delete</a>
+    [% END %]
+    </td>
+    </tr>
+[% END %]
+</table>
+[% PROCESS pager.tt %]
+<br/>
+<a href="[% c.uri_for( 'edit' ) %]">Add</a>
+

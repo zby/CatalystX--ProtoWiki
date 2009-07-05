@@ -1,0 +1,5 @@
+[% widget %]
+<br>
+<a href="[% c.uri_for( 'list' ) %]">List</a>
+<hr>
+[% form %]

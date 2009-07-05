@@ -1,0 +1,13 @@
+<h1>[% page.title %]</h1>
+
+[% page.body %]
+<hr>
+
+<b>Creator:</b> [%  page.creator.username %], 
+<b>T Created:</b> [%  page.t_created %]
+<b>T Updated:</b> [%  page.t_updated %]
+<hr />
+<a href="[% c.uri_for( page.title, 'edit' ) %]">Edit</a>
+<hr />
+
+

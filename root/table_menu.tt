@@ -1,0 +1,8 @@
+| <a href="[% base %]">Home</a> 
+| <a href="[% base %]user">Users</a> 
+| <a href="[% base %]pagelist">Pages</a> 
+| [% IF c.user %] Logged in: [% c.user.username %] | <a href="[% base %]auth/logout">Logout</a> [% ELSE %] 
+<a href="[%base%]register">Register</a> | <a href="[% base %]auth/login?destination=[% c.req.path %]">Login</a>
+[% END %]
+|
+

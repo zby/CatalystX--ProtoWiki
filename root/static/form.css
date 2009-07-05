@@ -1,0 +1,80 @@
+
+fieldset {
+	padding: 12px 12px 12px 12px;
+	border: 1px solid #7CBFE5;
+	background-color: #FFFFFF;	
+}
+
+.main_fieldset {
+	font-size: 12px;
+}
+
+.main_fieldset fieldset {
+	margin: 20px 0 20px 0;	
+}
+
+fieldset input,
+fieldset password,
+fieldset radio,
+fieldset select,
+fieldset textarea
+{
+	margin: 8px 0 8px 0;
+}
+
+label {  
+	float: left;  
+	width: 120px;  
+	margin: 8px 10px 8px 0;	
+	text-align: right;
+}
+
+.main_fieldset fieldset label{
+	width: 108px; 
+	font-weight: normal;
+	
+}
+
+fieldset .error_message {
+       display: block;
+       color: #ff0000;
+	   margin: 20px 0 20px 0;
+}
+
+fieldset .error input,
+fieldset .error textarea,
+fieldset .error select {
+       background-color: #FFF0F0;
+	   border: 1px solid #ff0000;
+}
+
+#submit{
+	margin: 20px 0 10px 0;
+	padding: 2px 2px 2px 2px;
+	background-color:#DFF6E6;;
+    font: bold 14px Verdana, sans-serif;
+	color:#006DAC;
+}
+
+fieldset .radiogroup span label {
+	/* undo the above style */
+	float: none;
+	width: auto;
+	text-align: left;
+	padding-right: 0;
+}
+
+fieldset.checkboxgroup,
+fieldset.radiogroup
+{
+	margin: 0;
+	margin-left: 12em;
+	padding: 0;
+	width: auto;
+}
+
+fieldset.radiogroup.label {
+	border: 0;
+	margin-left: 0em;
+}
+

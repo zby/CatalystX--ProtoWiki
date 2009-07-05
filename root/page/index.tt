@@ -1,0 +1,64 @@
+
+<table name="view">
+
+<tr>
+<td class="view_label"><b>Creator:</b></td>
+<td>
+    
+    [%  item.creator %]
+    
+</td>
+</tr>
+
+<tr>
+<td class="view_label"><b>Page Id:</b></td>
+<td>
+    
+    [%  item.page_id %]
+    
+</td>
+</tr>
+
+<tr>
+<td class="view_label"><b>Title:</b></td>
+<td>
+    
+    [%  item.title %]
+    
+</td>
+</tr>
+
+<tr>
+<td class="view_label"><b>Body:</b></td>
+<td>
+    
+    [%  item.body %]
+    
+</td>
+</tr>
+
+<tr>
+<td class="view_label"><b>T Created:</b></td>
+<td>
+    
+    [%  item.t_created %]
+    
+</td>
+</tr>
+
+<tr>
+<td class="view_label"><b>T Updated:</b></td>
+<td>
+    
+    [%  item.t_updated %]
+    
+</td>
+</tr>
+
+</table>
+<hr />
+<a href="[% c.uri_for( 'edit', item.page_id,  ) %]">Edit</a>
+<hr />
+<a href="[% c.uri_for( 'list' ) %]">List</a>
+
+
