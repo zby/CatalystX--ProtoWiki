@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class';
+use String::Random 'random_regex';
 
 __PACKAGE__->load_components('InflateColumn::DateTime', 'TimeStamp', 'UTF8Columns', 'Core');
 __PACKAGE__->table('user');
@@ -11,30 +12,41 @@ __PACKAGE__->add_columns(
   'user_id',
   {
     data_type => 'INTEGER',
-    default_value => undef,
-    is_nullable => 1,
+    is_nullable => 0,
     size => undef,
   },
   'username',
+  {
+    data_type => 'varchar',
+    is_nullable => 0,
+    size => 32,
+  },
+  'email',
+  {
+    data_type => 'varchar',
+    is_nullable => 0,
+    size => 254,
+  },
+  'email_confirmed',
+  {
+    data_type => 'char',
+    default_value => undef,
+    is_nullable => 1,
+    size => 1,
+  },
+  'email_conf_code',
   {
     data_type => 'varchar',
     default_value => undef,
     is_nullable => 1,
     size => 32,
   },
-  'email',
+  'password',
   {
     data_type => 'varchar',
     default_value => undef,
     is_nullable => 1,
-    size => 254,
-  },
-  'password',
-  {
-    data_type => 'TEXT',
-    default_value => undef,
-    is_nullable => 1,
-    size => undef,
+    size => 32,
   },
   'status',
   {
@@ -64,6 +76,7 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key('user_id');
 __PACKAGE__->add_unique_constraint('username_unique', ['username']);
+__PACKAGE__->add_unique_constraint('email_unique', ['email']);
 __PACKAGE__->has_many(
   'pages',
   'CatalystX::ProtoWiki::DBSchema::Result::Page',
@@ -77,4 +90,13 @@ __PACKAGE__->has_many(
 
 __PACKAGE__->utf8_columns(qw/username email/);
 
+sub new {
+    my ( $class, $attrs ) = @_;
+
+    $attrs->{email_conf_code} = random_regex( '\w{32}' ) unless defined $attrs->{email_conf_code};
+
+    my $new = $class->next::method($attrs);
+
+    return $new;
+}
 1;

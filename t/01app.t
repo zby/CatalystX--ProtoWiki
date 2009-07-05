@@ -1,8 +1,9 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More tests => 1;
 
-BEGIN { use_ok 'Catalyst::Test', 'CatalystX::ProtoWiki' }
+use Test::WWW::Mechanize::Catalyst 'CatalystX::ProtoWiki';
+my $mech = Test::WWW::Mechanize::Catalyst->new;
+$mech->get_ok("/", "Application Running");
 
-ok( request('/')->is_success, 'Request should succeed' );
