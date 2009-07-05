@@ -22,8 +22,9 @@ requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Session::Store::FastMmap';
 requires 'Catalyst::Authentication::Store::DBIx::Class';
 requires 'Catalyst::Authentication::Credential::HTTP';
-requires 'DBIx::Class::EncodedColumn;
+requires 'DBIx::Class::EncodedColumn';
 
+requires 'Catalyst::Example::InstantCRUD' => '0.033';
 install_script glob('script/*.pl');
 auto_install;
 WriteAll;
