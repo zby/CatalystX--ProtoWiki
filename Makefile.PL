@@ -25,6 +25,9 @@ requires 'Catalyst::Authentication::Credential::HTTP';
 requires 'DBIx::Class::EncodedColumn';
 
 requires 'Catalyst::Example::InstantCRUD' => '0.033';
+
+test_requires 'String::Random';
+
 install_script glob('script/*.pl');
 auto_install;
 WriteAll;

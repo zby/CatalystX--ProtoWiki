@@ -4,6 +4,10 @@ use warnings;
 package CatalystX::ProtoWiki::Controller::User;
 
 use base "Catalyst::Example::Controller::InstantCRUD";
+use Email::Sender::Simple qw(sendmail);
+use Email::Simple;
+use Email::Simple::Creator;
+
 
 sub get_user {
     my ( $self, $c, $username ) = @_;
@@ -29,6 +33,15 @@ sub check_auth {
     ){
         $c->detach( '/auth/unauthorized' );
     }
+}
+
+sub confirm_email : Local {
+    my ( $self, $c, $username, $code ) = @_;
+    my $user = $self->get_user( $c, $username );
+    if( $code eq $user->email_conf_code ){
+        $user->update( { email_confirmed => 1 } );
+        $c->stash( confirmed => 1 );
+    } 
 }
 
 sub edit_info : Local {
@@ -68,11 +81,23 @@ sub edit_password : Local {
         }
         elsif( $form->process() ){
             $c->res->redirect( $c->uri_for( 'view', $username ) );
-            $c->stash( item => $user );
         }
     }
     $c->stash( form => $form->render );
     $c->stash( template => 'edit.tt' );
+}
+
+sub send_confirmation_email {
+    my ( $self, $user, $conf_url, $our_email ) = @_;
+    my $email = Email::Simple->create( 
+        header => [
+        To      => $user->email,
+        From    => $our_email,
+        Subject => "Registration",
+        ],
+        body => "Hi there!  Someone has registered your email address at our site.  Please go to $conf_url/" . $user->username . '/' . $user->email_conf_code . ' to confirm your email address.',
+    );
+    sendmail($email);
 }
 
 

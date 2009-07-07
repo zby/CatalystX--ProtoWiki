@@ -15,40 +15,25 @@ sub find_by_title {
     my( $self, $c, $title ) = @_;
 
     return $c->model('DBICSchemamodel')->resultset( 'Page' )->search( { title => $title } )->first;
-
 }
+
+sub is_external {
+    my( $self, $operation ) = @_;
+    my %ops = ( edit => 1, delete => 1 );
+    return $ops{ $operation };
+}
+
 sub default : Private {
-    my ( $self, $c, $page, $title, $operation ) = @_;
+    my ( $self, $c, $x, $title, $operation ) = @_;
     if( !length( $title ) ){
         $title = 'Home';
     }
     my $page = $self->find_by_title( $c, $title );
-    if( !$page || $operation eq 'edit' ){
-        my $params = $c->req->params;
-        if( ! $page ){
-            $c->detach( '/auth/unauthorized' ) if !$c->user;
-            $params->{title} = $title;
-            $params->{creator} = $c->user->id;
-        }
-        my @page = ();
-        @page = ( item => $page ) if $page;
-        my $form = CatalystX::ProtoWiki::Controller::Page::PageForm->new( 
-            params => $params,
-            schema => $c->model('DBICSchemamodel' ),
-            @page
-        );
-        if( $c->req->method eq 'POST' && $form->process() ){
-            $c->res->redirect( $c->uri_for( '/page', $title ) );
-        }
-        $form->field( 'submit' )->value( 'Update' ) if $page;
-        $form->field( 'submit' )->value( 'Create' ) if !$page;
-        warn $form->field( 'body' )->value;
-        warn $form->field( 'title' )->value;
-        $c->stash( page_form => $form );
-        $c->stash( template => 'edit.tt' );
+    if( $self->is_external( $operation ) ){
+        $self->$operation( $c, $page, $title );
     }
-    elsif( $operation eq 'delete' ){
-        $self->delete( $c, $page );
+    elsif( !$page ){
+        $self->edit( $c, $page, $title );
     }
     else{
         $c->stash( template => 'view.tt' );
@@ -57,6 +42,31 @@ sub default : Private {
     $c->stash( page => $page, title => $title );
 }
 
+sub edit {
+    my ( $self, $c, $page, $title ) = @_;
+    my $params = $c->req->params;
+    if( ! $page ){
+        $c->detach( '/auth/unauthorized' ) if !$c->user;
+        $params->{title} = $title;
+        $params->{creator} = $c->user->id;
+    }
+    my @page = ();
+    @page = ( item => $page ) if $page;
+    my $form = CatalystX::ProtoWiki::Controller::Page::PageForm->new( 
+        params => $params,
+        schema => $c->model('DBICSchemamodel' ),
+        @page
+    );
+    if( $c->req->method eq 'POST' && $form->process() ){
+        $c->res->redirect( $c->uri_for( '/page', $title ) );
+    }
+    $form->field( 'submit' )->value( 'Update' ) if $page;
+    $form->field( 'submit' )->value( 'Create' ) if !$page;
+    warn $form->field( 'body' )->value;
+    warn $form->field( 'title' )->value;
+    $c->stash( page_form => $form );
+    $c->stash( template => 'edit.tt' );
+}
 
 sub delete {
     my ( $self, $c, $page ) = @_;

@@ -29,6 +29,15 @@
 </tr>
 
 <tr>
+<td class="view_label"><b>Email confirmed?:</b></td>
+<td>
+    
+    [%  item.email_confirmed ? 'yes' : 'no' %]
+    
+</td>
+</tr>
+
+<tr>
 <td class="view_label"><b>Created:</b></td>
 <td>
     

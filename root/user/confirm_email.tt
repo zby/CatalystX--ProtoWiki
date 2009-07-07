@@ -1,0 +1,6 @@
+[% IF confirmed %]
+Your email has been confirmed.
+[% ELSE %]
+<span class="error">Wrong confirmation code.</span>
+[% END %]
+

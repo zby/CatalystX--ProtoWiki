@@ -15,6 +15,7 @@ sub index : Private {
     if( $c->req->method eq 'POST' && $form->process() ){
         my $item = $form->item;
         $c->authenticate( { username => $item->username, password => $item->password } );
+        CatalystX::ProtoWiki::Controller::User->send_confirmation_email( $item, $c->uri_for( '/', 'user', 'confirm_email' ), 'admin@example.com' );
         $c->res->redirect( $c->uri_for( '/', 'user', 'view', $item->username ) );
     }
     $c->stash( form => $form->render );
