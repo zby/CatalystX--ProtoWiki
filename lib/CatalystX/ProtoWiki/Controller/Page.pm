@@ -6,24 +6,24 @@ BEGIN {
 }
 use Path::Class;
 
-has operation => ( is => 'ro', lazy => 1, builder => 'get_operation', clearer => 'clear_operation' );
-sub get_operation {
+has operation => ( is => 'ro', lazy_build => 1, );
+sub _build_operation {
     my $self = shift;
     my $args = $self->ctx->req->args;
     warn 'operation: ' . $args->[ 2 ];
     return $args->[ 2 ];
 }
 
-has title => ( is => 'ro', lazy => 1, builder => 'get_title', clearer => 'clear_title' );
-sub get_title {
+has title => ( is => 'ro', lazy_build => 1 );
+sub _build_title {
     my $self = shift;
     my $args = $self->ctx->req->args;
     warn 'args: ' . Dumper( $args ); use Data::Dumper;
     return $args->[ 1 ] || 'Home';
 }
 
-has page => ( is => 'ro',  lazy => 1, builder => 'get_page', clearer => 'clear_page' );
-sub get_page {
+has page => ( is => 'ro',  lazy_build => 1, );
+sub _build_page {
     my $self = shift;
     return $self->ctx->model('DBICSchemamodel')->resultset( 'Page' )->search( { title => $self->title } )->first;
 }

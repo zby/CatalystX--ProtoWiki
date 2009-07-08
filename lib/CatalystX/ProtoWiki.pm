@@ -55,7 +55,9 @@ L<CatalystX::ProtoWiki::Controller::Root>, L<Catalyst>
 
 =head1 AUTHOR
 
-Zbyszek,,,
+Zbigniew Lukasiak
+
+xsawyerx - some inspiration and advice
 
 =head1 LICENSE
 
