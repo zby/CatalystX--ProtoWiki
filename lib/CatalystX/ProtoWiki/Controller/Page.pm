@@ -6,48 +6,71 @@ BEGIN {
 }
 use Path::Class;
 
+has operation => ( is => 'ro', lazy => 1, builder => 'get_operation', clearer => 'clear_operation' );
+sub get_operation {
+    my $self = shift;
+    my $args = $self->ctx->req->args;
+    warn 'operation: ' . $args->[ 2 ];
+    return $args->[ 2 ];
+}
+
+has title => ( is => 'ro', lazy => 1, builder => 'get_title', clearer => 'clear_title' );
+sub get_title {
+    my $self = shift;
+    my $args = $self->ctx->req->args;
+    warn 'args: ' . Dumper( $args ); use Data::Dumper;
+    return $args->[ 1 ] || 'Home';
+}
+
+has page => ( is => 'ro',  lazy => 1, builder => 'get_page', clearer => 'clear_page' );
+sub get_page {
+    my $self = shift;
+    return $self->ctx->model('DBICSchemamodel')->resultset( 'Page' )->search( { title => $self->title } )->first;
+}
+
+has ctx => ( is => 'rw', );
+
 sub auto : Local {
     my ( $self, $c ) = @_;
     $c->stash( additional_template_paths => [ dir( $c->config->{root}, 'page' ) . '' ] );
+    $self->clear_title;
+    $self->clear_page;
+    $self->clear_operation;
+    $self->ctx( $c );
 }
 
-sub find_by_title {
-    my( $self, $c, $title ) = @_;
-
-    return $c->model('DBICSchemamodel')->resultset( 'Page' )->search( { title => $title } )->first;
-}
 
 sub is_external {
     my( $self, $operation ) = @_;
     my %ops = ( edit => 1, delete => 1 );
-    return $ops{ $operation };
+    return $ops{ $operation } if $operation;
+    return;
 }
 
 sub default : Private {
-    my ( $self, $c, $x, $title, $operation ) = @_;
-    if( !length( $title ) ){
-        $title = 'Home';
-    }
-    my $page = $self->find_by_title( $c, $title );
+    my ( $self ) = @_;
+    my $operation = $self->operation;
     if( $self->is_external( $operation ) ){
-        $self->$operation( $c, $page, $title );
+        $self->$operation;
     }
-    elsif( !$page ){
-        $self->edit( $c, $page, $title );
+    elsif( !$self->page ){
+        $self->edit;
     }
     else{
-        $c->stash( template => 'view.tt' );
+        $self->ctx->stash( template => 'view.tt' );
     }
 
-    $c->stash( page => $page, title => $title );
+    $self->ctx->stash( page => $self->page, title => $self->title );
 }
 
 sub edit {
-    my ( $self, $c, $page, $title ) = @_;
+    my $self = shift;
+    my $c = $self->ctx;
     my $params = $c->req->params;
+    my $page = $self->page;
     if( ! $page ){
         $c->detach( '/auth/unauthorized' ) if !$c->user;
-        $params->{title} = $title;
+        $params->{title} = $self->title;
         $params->{creator} = $c->user->id;
     }
     my @page = ();
@@ -58,7 +81,7 @@ sub edit {
         @page
     );
     if( $c->req->method eq 'POST' && $form->process() ){
-        $c->res->redirect( $c->uri_for( '/page', $title ) );
+        $c->res->redirect( $c->uri_for( '/page', $self->title ) );
     }
     $form->field( 'submit' )->value( 'Update' ) if $page;
     $form->field( 'submit' )->value( 'Create' ) if !$page;
@@ -69,7 +92,9 @@ sub edit {
 }
 
 sub delete {
-    my ( $self, $c, $page ) = @_;
+    my $self = shift;
+    my $c = $self->ctx;
+    my $page = $self->page;
     if ( $c->req->method eq 'POST' ) {
         $page->delete;
         $c->res->redirect( $c->uri_for( '/pagelist' ) );
