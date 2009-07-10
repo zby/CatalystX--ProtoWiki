@@ -23,13 +23,6 @@ sub get_operation {
     return $operation;
 }
 
-sub get_id {
-    my ( $self, $c ) = @_;
-    my $args = $c->req->args;
-    return $args->[0] if ! $self->is_external( $args->[0] );
-    return;
-}
-
 
 sub is_external {
     my( $self, $operation ) = @_;
@@ -38,21 +31,24 @@ sub is_external {
     return;
 }
 
+sub stash_item {
+    my ( $self, $c ) = @_;
+    my $args = $c->req->args;
+    return if !defined $args->[0] || $self->is_external( $args->[0] );
+    my $item = $self->resultset( $c )->search( { username => $args->[0] } )->first;
+    if( !$item){
+        $c->response->status(404);
+        $c->response->body("404 Not Found");
+        $c->detach;
+    }
+    $c->stash( item => $item );
+}
 
 sub default : Path {
     my ( $self, $c ) = @_;
     $c->stash( additional_template_paths => [ dir( $c->config->{root}, 'user' ) . '' ] );
     my $operation = $self->get_operation( $c );
-    my $id = $self->get_id( $c );
-    if( defined $id ){
-        my $item = $self->resultset( $c )->search( { username => $id } )->first;
-        if( !$item){
-            $c->response->status(404);
-            $c->response->body("404 Not Found");
-            $c->detach;
-        }
-        $c->stash( item => $item );
-    }
+    $self->stash_item( $c );
     warn 'operation: ' . $operation;
     $c->stash( template => $operation . '.tt' );
     $self->$operation( $c );
