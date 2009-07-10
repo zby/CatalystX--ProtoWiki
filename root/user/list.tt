@@ -44,15 +44,15 @@
     </td>
      
     [% SET id = row.$pri %]
-    <td><a href="[% c.uri_for( 'view', row.username,  ) %]">View</a></td>
+    <td><a href="[% c.uri_for( row.username, 'view'  ) %]">View</a></td>
     [% IF c.check_user_roles('admin') %]
-    <td><a href="[% c.uri_for( 'edit', row.user_id,  ) %]">Edit</a></td>
-    <td><a href="[% c.uri_for( 'destroy', row.user_id,  ) %]">Destroy</a></td>
+    <td><a href="[% c.uri_for( row.user_id, 'edit' ) %]">Edit</a></td>
+    <td><a href="[% c.uri_for( row.user_id, 'destroy' ) %]">Destroy</a></td>
     [% END %]
     </tr>
 [% END %]
 </table>
 [% PROCESS pager.tt %]
 <br/>
-<a href="[% c.uri_for( 'edit' ) %]">Add</a>
+<a href="[% c.uri_for( { edit_form => 1 } ) %]">Add</a>
 

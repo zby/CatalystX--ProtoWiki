@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 9;
 BEGIN { $ENV{EMAIL_SENDER_TRANSPORT} = 'Test' }
 
 use Test::WWW::Mechanize::Catalyst 'CatalystX::ProtoWiki';
@@ -11,7 +11,7 @@ my $mech = Test::WWW::Mechanize::Catalyst->new;
 my $schema = CatalystX::ProtoWiki::DBSchema->connect( 'dbi:SQLite:wiki.db' );
 
 $mech->get_ok('/', 'Application Running');
-$mech->get_ok('/register', 'Registration Page' );
+$mech->get_ok('/user/register', 'Registration Page' );
 my $username = random_regex('\w{20}');
 $mech->submit_form_ok( {
         form_number => 1,
@@ -35,4 +35,6 @@ my $link = $1;
 $mech->get_ok($link, 'Confirmation page');
 $user->discard_changes;
 ok( $user->email_confirmed, 'Email confirmed' );
+$mech->get_ok('/user/', 'Listing Page');
+$mech->content_contains( $user->username, 'user listed' );
 

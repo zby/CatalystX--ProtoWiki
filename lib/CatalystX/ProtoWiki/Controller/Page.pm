@@ -50,16 +50,13 @@ sub is_external {
 sub default : Private {
     my ( $self ) = @_;
     my $operation = $self->operation;
+    $operation = 'edit' if !$self->page;
     if( $self->is_external( $operation ) ){
         $self->$operation;
-    }
-    elsif( !$self->page ){
-        $self->edit;
     }
     else{
         $self->ctx->stash( template => 'view.tt' );
     }
-
     $self->ctx->stash( page => $self->page, title => $self->title );
 }
 

@@ -87,7 +87,9 @@ __PACKAGE__->has_many(
     'CatalystX::ProtoWiki::DBSchema::Result::UserRole',
     { 'foreign.user_id' => 'self.user_id' },
 );
-
+__PACKAGE__->many_to_many( 
+    roles => 'user_roles', 'role'
+);
 __PACKAGE__->utf8_columns(qw/username email/);
 
 sub new {

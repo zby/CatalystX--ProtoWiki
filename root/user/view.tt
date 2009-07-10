@@ -58,11 +58,11 @@
 </table>
 <hr />
 [% IF c.user.user_id == item.user_id OR check_user_roles('admin') %]
-<a href="[% c.uri_for( 'edit_info', item.username,  ) %]">Edit</a>
+<a href="[% c.uri_for( item.username, 'edit_info' ) %]">Edit</a>
 <hr />
-<a href="[% c.uri_for( 'edit_password', item.username,  ) %]">Change Password</a>
+<a href="[% c.uri_for( item.username, 'edit_password' ) %]">Change Password</a>
 <hr />
 [% END %]
-<a href="[% c.uri_for( 'list' ) %]">List</a>
+<a href="[% c.uri_for( '' ) %]">List</a>
 
 
