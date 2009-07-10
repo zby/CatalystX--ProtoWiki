@@ -1,4 +1,4 @@
-
+[% SET admin = c.check_user_roles('admin') %]
 <table>
 <tr>
 
@@ -45,9 +45,9 @@
      
     [% SET id = row.$pri %]
     <td><a href="[% c.uri_for( row.username, 'view'  ) %]">View</a></td>
-    [% IF c.check_user_roles('admin') %]
-    <td><a href="[% c.uri_for( row.user_id, 'edit' ) %]">Edit</a></td>
-    <td><a href="[% c.uri_for( row.user_id, 'destroy' ) %]">Destroy</a></td>
+    [% IF admin %]
+    <td><a href="[% c.uri_for( row.username, 'edit' ) %]">Edit</a></td>
+    <td><a href="[% c.uri_for( row.username, 'delete' ) %]">Delete</a></td>
     [% END %]
     </tr>
 [% END %]

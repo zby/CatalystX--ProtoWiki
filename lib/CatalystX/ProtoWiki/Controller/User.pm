@@ -194,6 +194,26 @@ sub list {
     $c->stash->{result} = $result;
 }
 
+sub delete {
+    my ( $self, $c ) = @_;
+    my $user = $self->get_item( $c );
+    $self->check_auth( $c, $user );
+    if ( $c->req->method eq 'POST' ) {
+        $user->delete;
+        $c->res->redirect( $c->uri_for( '' ) );
+    }
+    else {
+        my $action_uri = $c->uri_for( $user->username, 'delete' );
+        $c->stash->{delete_widget} = <<END;
+<form action="$action_uri" id="widget" method="post">
+<fieldset class="widget_fieldset">
+<input class="submit" id="widget_ok" name="ok" type="submit" value="Delete ?" />
+</fieldset>
+</form>
+END
+    }
+}
+
 
 {
     package CatalystX::ProtoWiki::Controller::User::InfoUpdateForm;
