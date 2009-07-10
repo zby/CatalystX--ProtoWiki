@@ -17,7 +17,6 @@ sub resultset {
 sub get_operation {
     my ( $self, $c ) = @_;
     my $args = $c->req->args;
-    return $args->[0] if $self->is_external( $args->[0] );
     return 'list' if !defined $args->[0];
     my $operation = $args->[ 1 ] || 'view';
     return $operation;
@@ -31,24 +30,23 @@ sub is_external {
     return;
 }
 
-sub stash_item {
+sub get_item {
     my ( $self, $c ) = @_;
     my $args = $c->req->args;
-    return if !defined $args->[0] || $self->is_external( $args->[0] );
+    return if !defined $args->[0];
     my $item = $self->resultset( $c )->search( { username => $args->[0] } )->first;
     if( !$item){
         $c->response->status(404);
         $c->response->body("404 Not Found");
         $c->detach;
     }
-    $c->stash( item => $item );
+    return $item;
 }
 
 sub default : Path {
     my ( $self, $c ) = @_;
     $c->stash( additional_template_paths => [ dir( $c->config->{root}, 'user' ) . '' ] );
     my $operation = $self->get_operation( $c );
-    $self->stash_item( $c );
     warn 'operation: ' . $operation;
     $c->stash( template => $operation . '.tt' );
     $self->$operation( $c );
@@ -63,17 +61,20 @@ sub register {
     if( $c->req->method eq 'POST' && $form->process() ){
         my $item = $form->item;
         $c->authenticate( { username => $item->username, password => $item->password } );
-        $self->send_confirmation_email( $item, $c->uri_for( $item->username, 'confirm_email', $item->email_conf_code ), 'admin@example.com' );
-        $c->res->redirect( $c->uri_for( $item->username, 'view' ) );
+        $self->send_confirmation_email( $item, $c->uri_for( '/user', $item->username, 'confirm_email', $item->email_conf_code ), 'admin@example.com' );
+        $c->res->redirect( $c->uri_for( '/user', $item->username, 'view' ) );
     }
     $c->stash( form => $form->render );
 }
 
-sub view { }
+sub view {
+    my ( $self, $c, ) = @_;
+    $c->stash( user => $self->get_item( $c ) );
+}
 
 sub check_auth {
-    my( $self, $c, ) = @_;
-    my $username = $c->stash->{item}->username;
+    my( $self, $c, $user ) = @_;
+    my $username = $user->username;
     if( !$c->user 
         || ( $c->user->username ne $username && !$c->check_user_roles('admin') ) 
     ){
@@ -96,9 +97,8 @@ sub send_confirmation_email {
 
 sub confirm_email : Local {
     my ( $self, $c, ) = @_;
-    my $user = $c->stash->{item};
+    my $user = $self->get_item( $c );
     my $args = $c->req->args;
-    warn Dumper( $args ); use Data::Dumper;
     if( $args->[2] eq $user->email_conf_code ){
         $user->update( { email_confirmed => 1 } );
         $c->stash( confirmed => 1 );
@@ -107,10 +107,11 @@ sub confirm_email : Local {
 
 sub edit_info {
     my ( $self, $c, ) = @_;
-    $self->check_auth( $c, );
+    my $user = $self->get_item( $c );
+    $self->check_auth( $c, $user );
     my $form = CatalystX::ProtoWiki::Controller::User::InfoUpdateForm->new(
         params => $c->req->params,
-        item => $c->stash->{item},
+        item => $user,
     );
     if( $c->req->method eq 'POST' && $form->process() ){
         $c->res->redirect( $c->uri_for( $form->item->username, 'view' ) );
@@ -123,14 +124,15 @@ sub edit_info {
 
 sub edit_password {
     my ( $self, $c, ) = @_;
-    $self->check_auth( $c, );
+    my $user = $self->get_item( $c );
+    $self->check_auth( $c, $user );
     my $form = CatalystX::ProtoWiki::Controller::User::PasswordUpdateForm->new(
         params => $c->req->params,
-        item => $c->stash->{item},
+        item => $user,
     );
     if( $c->req->method eq 'POST' ){
         if( ! $c->authenticate( { 
-                    username => $c->stash->{item}->username,
+                    username => $user->username,
                     password => $c->req->params->{old_password} 
                 }
             )
@@ -138,7 +140,7 @@ sub edit_password {
             $form->field( 'old_password' )->add_error( 'Wrong password' );
         }
         elsif( $form->process() ){
-            $c->res->redirect( $c->uri_for( $c->stash->{item}->username, 'view' ) );
+            $c->res->redirect( $c->uri_for( $user->username, 'view' ) );
         }
     }
     $c->stash( form => $form->render );

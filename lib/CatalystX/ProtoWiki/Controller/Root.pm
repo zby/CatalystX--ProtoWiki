@@ -47,6 +47,10 @@ sub index : Private{
     $c->res->redirect( $c->uri_for( '/page', 'Home') );
 }
 
+sub register : Local {
+    my ( $self, $c ) = @_;
+    CatalystX::ProtoWiki::Controller::User->register( $c );
+}
 
 
 =head2 restricted

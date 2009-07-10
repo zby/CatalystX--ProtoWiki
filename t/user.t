@@ -11,7 +11,7 @@ my $mech = Test::WWW::Mechanize::Catalyst->new;
 my $schema = CatalystX::ProtoWiki::DBSchema->connect( 'dbi:SQLite:wiki.db' );
 
 $mech->get_ok('/', 'Application Running');
-$mech->get_ok('/user/register', 'Registration Page' );
+$mech->get_ok('/register', 'Registration Page' );
 my $username = random_regex('\w{20}');
 $mech->submit_form_ok( {
         form_number => 1,
