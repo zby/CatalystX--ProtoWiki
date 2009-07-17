@@ -24,6 +24,7 @@ requires 'Catalyst::Authentication::Store::DBIx::Class';
 requires 'Catalyst::Authentication::Credential::HTTP';
 requires 'DBIx::Class::EncodedColumn';
 
+requires 'CatalystX::SimpleLogin';
 requires 'Catalyst::Example::InstantCRUD' => '0.033';
 
 test_requires 'String::Random';

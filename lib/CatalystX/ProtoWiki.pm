@@ -1,10 +1,5 @@
-use strict;
-use warnings;
-
 package CatalystX::ProtoWiki;
-
-use Catalyst::Runtime '5.70';
-
+use Moose;
 
 use Catalyst qw/
 	-Debug
@@ -16,7 +11,11 @@ use Catalyst qw/
                Authorization::Roles
                Session
                Session::State::Cookie
-               Session::Store::FastMmap /;
+               Session::Store::FastMmap 
+               +CatalystX::SimpleLogin
+               /;
+extends 'Catalyst';
+
 #	Session
 #	Session::Store::FastMmap
 #	Session::State::Cookie

@@ -10,11 +10,11 @@ use String::Random qw(random_regex);
 my $mech = Test::WWW::Mechanize::Catalyst->new;
 my $schema = CatalystX::ProtoWiki::DBSchema->connect( 'dbi:SQLite:wiki.db' );
 
-$mech->get_ok("/auth/login", 'Login page');
+$mech->get_ok("/login", 'Login page');
 $mech->submit_form_ok( {
         form_number => 1,
         fields => {
-            user => 'admin',
+            username => 'admin',
             password => 'pass4admin',
         }
     },
